@@ -5,6 +5,7 @@ This is the repository for the BeagleBone Black sources in the DCC project
 The project is created on Debian 64bit:
 
 ~$ uname -a
+
 Linux debian 4.9.0-3-amd64 #1 SMP Debian 4.9.30-2+deb9u5 (2017-09-19) x86_64 GNU/Linux
 
 It is cross-compiled for architecture armhf:
