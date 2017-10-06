@@ -17,7 +17,7 @@
 
 /* 
  * File:   SocketInterface.h
- * Author: Paul Van den Bergh
+ * Author: Paul Van den Bergh.
  *
  * Created on 3 oktober 2017, 16:04
  */
