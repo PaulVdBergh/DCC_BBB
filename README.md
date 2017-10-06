@@ -8,6 +8,13 @@ The project is created on Debian 64bit:
 
 Linux debian 4.9.0-3-amd64 #1 SMP Debian 4.9.30-2+deb9u5 (2017-09-19) x86_64 GNU/Linux
 
+Using
+
+Eclipse IDE for C/C++ Developers
+
+Version: Oxygen.1 Release (4.7.1)
+Build id: 20170914-1200
+
 It is cross-compiled for architecture armhf:
 
 ~$ dpkg --print-foreign-architectures
