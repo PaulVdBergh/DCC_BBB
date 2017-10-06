@@ -93,12 +93,12 @@ namespace DCC_V3
 
 	void CommandStation::replyAll(const uint32_t& flags, const uint8_t* payload)
 	{
-		vector<CommandStation*>::iterator it = sm_Stations.begin();
-		while (it != sm_Stations.end())
+		for (CommandStation* pStation : sm_Stations)
 		{
-			if (flags & (*it)->getBroadcastFlags())
+			if (flags & pStation->getBroadcastFlags())
 			{
-				SocketCmdStation* pSS = dynamic_cast<SocketCmdStation*>(*it);
+				SocketCmdStation* pSS =
+				        dynamic_cast<SocketCmdStation*>(pStation);
 				if (pSS)
 				{
 					sendto(pSS->getMySocket(), payload, payload[0], 0,
@@ -106,7 +106,6 @@ namespace DCC_V3
 					        sizeof(struct sockaddr_in));
 				}
 			}
-			it++;
 		}
 	}
 
