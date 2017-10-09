@@ -77,7 +77,7 @@ namespace DCC_V3
 
 			static struct LAN_SystemState sm_LAN_SystemState;
 
-			static map<in_port_t, SocketInterface*> sm_Interfaces;
+			static map<in_port_t, SocketInterface*> sm_SocketInterfaces;
 	};
 } /* namespace DCC_V3 */
 #endif /* SOCKETINTERFACE_H */

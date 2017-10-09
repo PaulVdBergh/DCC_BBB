@@ -46,13 +46,13 @@ namespace DCC_V3
 
 	const uint32_t& CommandStation::getBroadcastFlags()
 	{
-		return *((uint32_t*) &m_pLan_BroadcastFlags[4]);
+		return *((uint32_t*)&m_pLan_BroadcastFlags[4]);
 	}
 	;
 
 	void CommandStation::setBroadcastFlags(const uint32_t& flags)
 	{
-		*((uint32_t*) &m_pLan_BroadcastFlags[4]) = flags;
+		*((uint32_t*)&m_pLan_BroadcastFlags[4]) = flags;
 	}
 	;
 
@@ -102,7 +102,7 @@ namespace DCC_V3
 				if (pSS)
 				{
 					sendto(pSS->getMySocket(), payload, payload[0], 0,
-					        (struct sockaddr*) &(pSS->getAddress()),
+					        (struct sockaddr*)&(pSS->getAddress()),
 					        sizeof(struct sockaddr_in));
 				}
 			}

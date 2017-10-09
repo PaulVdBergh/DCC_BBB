@@ -40,12 +40,12 @@ namespace DCC_V3
 
 	SocketInterface* SocketInterface::getInstance(const in_port_t& port)
 	{
-		map<in_port_t, SocketInterface*>::iterator it = sm_Interfaces.find(
+		map<in_port_t, SocketInterface*>::iterator it = sm_SocketInterfaces.find(
 		        port);
-		if (it == sm_Interfaces.end())
+		if (it == sm_SocketInterfaces.end())
 		{
 			SocketInterface* pNew = new SocketInterface(port);
-			sm_Interfaces[port] = pNew;
+			sm_SocketInterfaces[port] = pNew;
 			return pNew;
 		}
 		return it->second;
@@ -79,7 +79,7 @@ namespace DCC_V3
 		m_sockaddr_me.sin_family = AF_INET;
 		m_sockaddr_me.sin_port = htons(m_port);
 		m_sockaddr_me.sin_addr.s_addr = htonl(INADDR_ANY);
-		result = bind(m_sock_me, (struct sockaddr*) &m_sockaddr_me,
+		result = bind(m_sock_me, (struct sockaddr*)&m_sockaddr_me,
 		        sizeof(m_sockaddr_me));
 		if (-1 == result)
 		{
@@ -95,10 +95,8 @@ namespace DCC_V3
 	SocketInterface::~SocketInterface()
 	{
 		int result;
-		ssize_t bytesWritten;
 		uint64_t stop = 1;
-		if (sizeof(stop)
-		        != (bytesWritten = write(m_fdStop, &stop, sizeof(stop))))
+		if (sizeof(stop) != write(m_fdStop, &stop, sizeof(stop)))
 		{
 			exit(-1);
 		}
@@ -146,7 +144,7 @@ namespace DCC_V3
 			exit(-1);
 		}
 
-		while (bContinue)
+		while(bContinue)
 		{
 			int notifications = epoll_wait(epfd, evlist, 5, -1);
 			if (-1 == notifications)
@@ -157,6 +155,7 @@ namespace DCC_V3
 				}
 				else
 				{
+					//	TODO : better error recovery !!
 					bContinue = false;
 					continue;
 				}
@@ -176,9 +175,9 @@ namespace DCC_V3
 					socklen_t slen = sizeof(si_other);
 
 					int recv_len = recvfrom(m_sock_me, recvbuffer, 128, 0,
-					        (struct sockaddr*) &si_other, &slen);
+					        (struct sockaddr*)&si_other, &slen);
 					uint8_t* payload = recvbuffer;
-					while (payload < (recvbuffer + recv_len))
+					while(payload < (recvbuffer + recv_len))
 					{
 						char msg[256];
 						char* location = msg;
@@ -189,7 +188,7 @@ namespace DCC_V3
 							        payload[ii]);
 						}
 						location += sprintf(location, "   ");
-						switch (*(uint32_t*) payload)
+						switch (*(uint32_t*)payload)
 						{
 							case 0x00100004: //  LAN_GET_SERIAL_NUMBER
 							{
@@ -197,17 +196,16 @@ namespace DCC_V3
 								        "LAN_GET_SERIAL_NUMBER\n");
 								sendto(m_sock_me, LAN_SERIAL_NUMBER,
 								        LAN_SERIAL_NUMBER[0], 0,
-								        (struct sockaddr*) &si_other,
+								        (struct sockaddr*)&si_other,
 								        sizeof(si_other));
 								break;
 							}
 
 							case 0x00180004: //  LAN_GET_CODE
 							{
-								location += sprintf(location,
-								        "LAN_GET_CODE\n");
+								location += sprintf(location, "LAN_GET_CODE\n");
 								sendto(m_sock_me, LAN_CODE, LAN_CODE[0], 0,
-								        (struct sockaddr*) &si_other,
+								        (struct sockaddr*)&si_other,
 								        sizeof(si_other));
 								break;
 							}
@@ -217,15 +215,14 @@ namespace DCC_V3
 								location += sprintf(location,
 								        "LAN_GET_HWINFO\n");
 								sendto(m_sock_me, LAN_HWINFO, LAN_HWINFO[0], 0,
-								        (struct sockaddr*) &si_other,
+								        (struct sockaddr*)&si_other,
 								        sizeof(si_other));
 								break;
 							}
 
 							case 0x00300004: //  LAN_LOGOFF
 							{
-								location += sprintf(location,
-								        "LAN_LOGOFF\n");
+								location += sprintf(location, "LAN_LOGOFF\n");
 								break;
 							}
 
@@ -237,7 +234,7 @@ namespace DCC_V3
 								        (CommandStation::find(m_sock_me,
 								                si_other))->getLAN_BROADCASTFLAGS();
 								sendto(m_sock_me, pMsg, pMsg[0], 0,
-								        (struct sockaddr*) &si_other,
+								        (struct sockaddr*)&si_other,
 								        sizeof(si_other));
 								break;
 							}
@@ -249,7 +246,7 @@ namespace DCC_V3
 								sendto(m_sock_me,
 								        &SocketInterface::sm_LAN_SystemState,
 								        sizeof(struct SocketInterface::LAN_SystemState),
-								        0, (struct sockaddr*) &si_other,
+								        0, (struct sockaddr*)&si_other,
 								        sizeof(si_other));
 								break;
 							}
@@ -277,7 +274,7 @@ namespace DCC_V3
 
 							case 0x00400006:
 							{
-								if (*(uint16_t*) &payload[4] == 0x8080) //  LAN_X_SET_STOP
+								if (*(uint16_t*)&payload[4] == 0x8080) //  LAN_X_SET_STOP
 								{
 									location += sprintf(location,
 									        "LAN_X_SET_STOP\n");
@@ -291,7 +288,7 @@ namespace DCC_V3
 									        Decoder::sm_MDecoders);
 									map<uint16_t, Decoder*>::iterator it =
 									        Decoder::sm_Decoders.begin();
-									while (it != Decoder::sm_Decoders.end())
+									while(it != Decoder::sm_Decoders.end())
 									{
 										LocDecoder* pLoc =
 										        dynamic_cast<LocDecoder*>(it->second);
@@ -325,7 +322,7 @@ namespace DCC_V3
 									uint8_t locMode[7];
 									pLoc->getLocMode(locMode);
 									sendto(m_sock_me, locMode, locMode[0], 0,
-									        (struct sockaddr*) &si_other,
+									        (struct sockaddr*)&si_other,
 									        sizeof(si_other));
 								}
 								location += sprintf(location,
@@ -350,7 +347,7 @@ namespace DCC_V3
 
 							case 0x00400007:
 							{
-								switch (*(uint16_t*) &payload[4])
+								switch (*(uint16_t*)&payload[4])
 								{
 									case 0x2121: //  LAN_X_GET_VERSION
 									{
@@ -360,7 +357,7 @@ namespace DCC_V3
 											        "LAN_X_GET_VERSION\n");
 											sendto(m_sock_me, LAN_X_VERSION,
 											        LAN_X_VERSION[0], 0,
-											        (struct sockaddr*) &si_other,
+											        (struct sockaddr*)&si_other,
 											        sizeof(si_other));
 										}
 										break;
@@ -382,7 +379,7 @@ namespace DCC_V3
 												status[7] ^= status[i];
 											}
 											sendto(m_sock_me, status, 8, 0,
-											        (struct sockaddr*) &si_other,
+											        (struct sockaddr*)&si_other,
 											        sizeof(si_other));
 										}
 										break;
@@ -429,7 +426,7 @@ namespace DCC_V3
 											        LAN_X_FIRMWARE_VERSION,
 											        LAN_X_FIRMWARE_VERSION[0],
 											        0,
-											        (struct sockaddr*) &si_other,
+											        (struct sockaddr*)&si_other,
 											        sizeof(si_other));
 										}
 										break;
@@ -513,9 +510,9 @@ namespace DCC_V3
 							{
 								location += sprintf(location,
 								        "LAN_SET_BROADCASTFLAGS : 0x%08X\n",
-								        (*(uint32_t*) &payload[4]));
+								        (*(uint32_t*)&payload[4]));
 								(CommandStation::find(m_sock_me, si_other))->setBroadcastFlags(
-								        *(uint32_t*) &payload[4]);
+								        *(uint32_t*)&payload[4]);
 								break;
 							}
 
@@ -529,8 +526,7 @@ namespace DCC_V3
 										{
 											case 0x11: //  LAN_X_CV_READ
 											{
-												location += sprintf(
-												        location,
+												location += sprintf(location,
 												        "LAN_X_CV_READ\n");
 												break;
 											}
@@ -538,8 +534,7 @@ namespace DCC_V3
 											case 0x12: //  LAN_X_DCC_WRITE_REGISTER
 											{
 												location +=
-												        sprintf(
-												                location,
+												        sprintf(location,
 												                "LAN_X_DCC_WRITE_REGISTER\n");
 												break;
 											}
@@ -1080,7 +1075,7 @@ namespace DCC_V3
 
 							case 0x0040000C:
 							{
-								switch (*(uint16_t*) &payload[4])
+								switch (*(uint16_t*)&payload[4])
 								{
 									case 0x30E6:
 									{
@@ -1096,16 +1091,14 @@ namespace DCC_V3
 											if (payload[10] == 0x00) //  LAN_X_POM_READ_BYTE
 											{
 												location +=
-												        sprintf(
-												                location,
+												        sprintf(location,
 												                "LAN_X_POM_READ_BYTE\n");
 
 											}
 											else //  LAN_X_POM_WRITE_BIT
 											{
 												location +=
-												        sprintf(
-												                location,
+												        sprintf(location,
 												                "LAN_X_POM_WRITE_BIT\n");
 
 											}
@@ -1127,15 +1120,13 @@ namespace DCC_V3
 											if (payload[10] == 0x00) //  LAN_X_POM_ACCESSORY_READ_BYTE
 											{
 												location +=
-												        sprintf(
-												                location,
+												        sprintf(location,
 												                "LAN_X_POM_ACCESSORY_READ_BYTE\n");
 											}
 											else //  LAN_X_POM_ACCESSORY_WRITE_BIT
 											{
 												location +=
-												        sprintf(
-												                location,
+												        sprintf(location,
 												                "LAN_X_POM_ACCESSORY_WRITE_BIT\n");
 											}
 										}
@@ -1164,6 +1155,6 @@ namespace DCC_V3
 	}
 
 	struct SocketInterface::LAN_SystemState SocketInterface::sm_LAN_SystemState;
-	map<in_port_t, SocketInterface*> SocketInterface::sm_Interfaces;
+	map<in_port_t, SocketInterface*> SocketInterface::sm_SocketInterfaces;
 
 } /* namespace DCC_V3 */

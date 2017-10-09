@@ -44,24 +44,36 @@ int main(int argc, char** argv)
 	switch (fork())
 	{
 		case -1:
+		{
 			return -1;
+		}
 		case 0:
+		{
 			break;
+		}
 		default:
+		{
 			_exit(EXIT_SUCCESS);
+		}
 	}
 
 	if (setsid() == -1)
-		return -1;
+	return -1;
 
 	switch (fork())
 	{
 		case -1:
+		{
 			return -1;
+		}
 		case 0:
+		{
 			break;
+		}
 		default:
+		{
 			_exit(EXIT_SUCCESS);
+		}
 	}
 
 	umask(0);
@@ -69,10 +81,14 @@ int main(int argc, char** argv)
 
 	maxfd = sysconf(_SC_OPEN_MAX);
 	if (maxfd == -1)
+	{
 		maxfd = 8192;
+	}
 
 	for (fd = 0; fd < maxfd; fd++)
+	{
 		close(fd);
+	}
 
 	close(STDIN_FILENO);
 	fd = open("/dev/null", O_RDWR);

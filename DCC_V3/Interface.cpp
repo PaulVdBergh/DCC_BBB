@@ -27,12 +27,12 @@
 namespace DCC_V3
 {
 
-    Interface::Interface()
-    {
-    }
+	Interface::Interface()
+	{
+	}
 
-    Interface::~Interface()
-    {
-    }
+	Interface::~Interface()
+	{
+	}
 
 } /* namespace DCC_V3 */

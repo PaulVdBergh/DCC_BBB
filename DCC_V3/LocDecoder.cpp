@@ -58,7 +58,7 @@ namespace DCC_V3
 		m_LocInfo.XOR = 0;
 		for (uint8_t index = 4; index < 13; index++)
 		{
-			m_LocInfo.XOR ^= ((uint8_t*) &m_LocInfo)[index];
+			m_LocInfo.XOR ^= ((uint8_t*)&m_LocInfo)[index];
 		}
 		memcpy(pInfo, &m_LocInfo, sizeof(m_LocInfo));
 	}
@@ -66,7 +66,7 @@ namespace DCC_V3
 	void LocDecoder::getLocMode(uint8_t* pMode)
 	{
 		lock_guard<recursive_mutex> lock(m_MLocMode);
-		memcpy(pMode, &m_LocMode, *(uint8_t*) &m_LocMode.DataLen);
+		memcpy(pMode, &m_LocMode, *(uint8_t*)&m_LocMode.DataLen);
 	}
 
 } /* namespace DCC_V3 */
