@@ -39,6 +39,6 @@ namespace DCC_V3
 
 	};
 
-#endif /* INTERFACE_H */
-
 } /* namespace DCC_V3 */
+
+#endif /* INTERFACE_H */

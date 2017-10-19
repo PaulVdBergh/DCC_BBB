@@ -31,6 +31,7 @@ namespace DCC_V3
 			string	m_pDevice;
 			thread	m_thread;
 			int		m_fdStop;
+			int		m_fdSerial;
 
 			void threadFunc(void);
 

@@ -26,6 +26,7 @@
 using namespace std;
 
 #include "SocketInterface.h"
+#include "XpressNetInterface.h"
 using namespace DCC_V3;
 
 #include <sys/stat.h>
@@ -97,9 +98,11 @@ int main(int argc, char** argv)
 
 #endif // DEAMON
 
-	SocketInterface* pInterface = SocketInterface::getInstance(21105);
+	SocketInterface* pSocketInterface = SocketInterface::getInstance(21105);
+	XpressNetInterface* pXpressNetInterface = XpressNetInterface::getInstance("/dev/ttyO1");
 	sleep(120);
-	delete pInterface;
+	delete pXpressNetInterface;
+	delete pSocketInterface;
 
 	return 0;
 }

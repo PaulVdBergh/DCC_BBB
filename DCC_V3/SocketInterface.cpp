@@ -111,6 +111,7 @@ namespace DCC_V3
 		{
 			cout << __FUNCTION__ << " " << strerror(errno);
 		}
+		close(m_fdStop);
 	}
 
 	void SocketInterface::threadFunc()
