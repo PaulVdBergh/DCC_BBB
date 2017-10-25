@@ -27,6 +27,7 @@
 
 #include <map>
 #include <mutex>
+#include <thread>
 using namespace std;
 
 namespace DCC_V3
@@ -44,11 +45,16 @@ namespace DCC_V3
 				return m_Address;
 			}
 
+			virtual bool getDccMessage(uint8_t* pMsg);
+
 			static Decoder* getDecoder(const uint16_t& address);
 
 		protected:
 			uint16_t m_Address;
 
+			static void threadFunc(void);
+
+			static thread m_thread;
 			static map<uint16_t, Decoder*> sm_Decoders;
 			static recursive_mutex sm_MDecoders;
 		private:

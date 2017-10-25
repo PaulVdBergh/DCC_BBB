@@ -52,6 +52,44 @@ namespace DCC_V3
 	{
 	}
 
+	bool LocDecoder::getDccMessage(uint8_t* pMsg)
+	{
+		static uint8_t state = 0;
+
+		switch(state)
+		{
+			case 0:
+			{
+				//	Speed message
+				lock_guard<recursive_mutex> lock(m_MLocInfo);
+				pMsg[0] = 4;
+				pMsg[1] = m_LocInfo.Addr_LSB;
+				pMsg[2] = 0x40;
+				if(getDirection()) pMsg[2] |= 0x20;
+				pMsg[2] |= getSpeed();
+				pMsg[3] = pMsg[1] ^ pMsg[2];
+				state++;
+				return true;
+			}
+			case 1:
+			{
+				//	Function (F0 - F4) Message
+				lock_guard<recursive_mutex> lock(m_MLocInfo);
+				pMsg[0] = 4;
+				pMsg[1] = m_LocInfo.Addr_LSB;
+				pMsg[2] = 0x80 | (m_LocInfo.DB4 & 0x1F);
+				pMsg[3] = pMsg[1] ^ pMsg[2];
+				state++;
+				return true;
+			}
+			default:
+			{
+				state = 0;
+			}
+		}
+		return false;
+	}
+
 	void LocDecoder::getLocInfo(uint8_t* pInfo)
 	{
 		lock_guard<recursive_mutex> lock(m_MLocInfo);

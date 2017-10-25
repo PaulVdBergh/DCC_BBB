@@ -25,6 +25,9 @@
 #include "Decoder.h"
 
 #include <algorithm>
+#include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
 
 namespace DCC_V3
 {
@@ -38,6 +41,11 @@ namespace DCC_V3
 	{
 	}
 
+	bool Decoder::getDccMessage(uint8_t* pMsg)
+	{
+		return false;
+	}
+
 	Decoder* Decoder::getDecoder(const uint16_t& address)
 	{
 		lock_guard<recursive_mutex> lock(sm_MDecoders);
@@ -49,6 +57,40 @@ namespace DCC_V3
 		return (it->second);
 	}
 
+	void Decoder::threadFunc()
+	{
+		uint8_t DCCMessage[32];
+		int fd;
+		fd = open("/dev/rpmsg_pru30", O_RDWR);
+		if (fd < 0)
+		{
+			perror("/dev/rpmsg_pru30");
+		}
+
+		while(true)
+		{
+			if (!sm_Decoders.empty())
+			{
+				for (auto decoderpair : sm_Decoders)
+				{
+					if (decoderpair.second)
+					{
+						if (decoderpair.second->getDccMessage(DCCMessage))
+						{
+							write(fd, DCCMessage, DCCMessage[0]);
+						}
+					}
+				}
+			}
+			else
+			{
+				sleep(1);
+			}
+		}
+	}
+
+	thread Decoder::m_thread = thread([]
+	{	threadFunc();});
 	map<uint16_t, Decoder*> Decoder::sm_Decoders;
 	recursive_mutex Decoder::sm_MDecoders;
 

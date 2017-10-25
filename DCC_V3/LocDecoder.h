@@ -36,6 +36,8 @@ namespace DCC_V3
 			LocDecoder(const uint16_t& address);
 			virtual ~LocDecoder();
 
+			virtual bool getDccMessage(uint8_t* pMsg);
+
 			void getLocInfo(uint8_t* pInfo);
 			void getLocMode(uint8_t* pMode);
 

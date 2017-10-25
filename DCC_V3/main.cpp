@@ -100,7 +100,10 @@ int main(int argc, char** argv)
 
 	SocketInterface* pSocketInterface = SocketInterface::getInstance(21105);
 	XpressNetInterface* pXpressNetInterface = XpressNetInterface::getInstance("/dev/ttyO1");
-	sleep(120);
+	while(1)
+	{
+		sleep(100);
+	}
 	delete pXpressNetInterface;
 	delete pSocketInterface;
 
