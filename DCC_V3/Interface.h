@@ -33,6 +33,7 @@ namespace DCC_V3
 		public:
 			Interface();
 			virtual ~Interface();
+
 		protected:
 
 		private:

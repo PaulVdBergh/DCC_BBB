@@ -35,8 +35,7 @@ namespace DCC_V3
 	CommandStation::CommandStation()
 	{
 		m_pLan_BroadcastFlags = new uint8_t[LAN_BROADCASTFLAGS[0]];
-		memcpy(m_pLan_BroadcastFlags, LAN_BROADCASTFLAGS,
-		        LAN_BROADCASTFLAGS[0]);
+		memcpy(m_pLan_BroadcastFlags, LAN_BROADCASTFLAGS, LAN_BROADCASTFLAGS[0]);
 	}
 
 	CommandStation::~CommandStation()
@@ -48,26 +47,21 @@ namespace DCC_V3
 	{
 		return *((uint32_t*)&m_pLan_BroadcastFlags[4]);
 	}
-	;
 
 	void CommandStation::setBroadcastFlags(const uint32_t& flags)
 	{
 		*((uint32_t*)&m_pLan_BroadcastFlags[4]) = flags;
 	}
-	;
 
 	const uint8_t* CommandStation::getLAN_BROADCASTFLAGS()
 	{
 		return m_pLan_BroadcastFlags;
 	}
-	;
 
-	CommandStation* CommandStation::find(int& sock_me,
-	        const struct sockaddr_in& address)
+	CommandStation* CommandStation::find(int& sock_me, const struct sockaddr_in& address)
 	{
 		lock_guard<recursive_mutex> guard(sm_MStations);
-		auto station =
-		        find_if(sm_Stations.begin(), sm_Stations.end(),
+		auto station = find_if(sm_Stations.begin(), sm_Stations.end(),
 		                [&address](CommandStation * pS)
 		                {
 			                SocketCmdStation* pSS = dynamic_cast<SocketCmdStation*> (pS);
@@ -76,11 +70,7 @@ namespace DCC_V3
 				                return(false);
 			                }
 			                const struct sockaddr_in & otherAddress = pSS->getAddress();
-			                return(
-					                (otherAddress.sin_addr.s_addr == address.sin_addr.s_addr)
-					                &&
-					                (otherAddress.sin_port == address.sin_port)
-			                );
+			                return((otherAddress.sin_addr.s_addr == address.sin_addr.s_addr) && (otherAddress.sin_port == address.sin_port));
 		                });
 		if (station == sm_Stations.end())
 		{
@@ -97,13 +87,10 @@ namespace DCC_V3
 		{
 			if (flags & pStation->getBroadcastFlags())
 			{
-				SocketCmdStation* pSS =
-				        dynamic_cast<SocketCmdStation*>(pStation);
+				SocketCmdStation* pSS = dynamic_cast<SocketCmdStation*>(pStation);
 				if (pSS)
 				{
-					sendto(pSS->getMySocket(), payload, payload[0], 0,
-					        (struct sockaddr*)&(pSS->getAddress()),
-					        sizeof(struct sockaddr_in));
+					sendto(pSS->getMySocket(), payload, payload[0], 0, (struct sockaddr*)&(pSS->getAddress()), sizeof(struct sockaddr_in));
 				}
 			}
 		}

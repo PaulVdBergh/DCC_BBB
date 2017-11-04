@@ -27,9 +27,8 @@
 namespace DCC_V3
 {
 
-	SocketCmdStation::SocketCmdStation(int& sock_me,
-	        const struct sockaddr_in& address)
-			: m_sock_me(sock_me), m_Address(address)
+	SocketCmdStation::SocketCmdStation(int& sock_me, const struct sockaddr_in& address)
+	:	m_sock_me(sock_me), m_Address(address)
 	{
 	}
 

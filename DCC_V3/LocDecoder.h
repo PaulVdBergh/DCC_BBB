@@ -27,6 +27,9 @@
 
 #include"Decoder.h"
 
+#include <map>
+using namespace std;
+
 namespace DCC_V3
 {
 
@@ -46,259 +49,252 @@ namespace DCC_V3
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB2 & 0x08);
 			}
-			;
 
 			uint8_t getSpeedsteps()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB2 & 0x07);
 			}
-			;
 
 			bool getDirection()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB3 & 0x80);
 			}
-			;
 
 			uint8_t getSpeed()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB3 & 0x7F);
 			}
-			;
 
 			bool getDualTraction()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB4 & 0x40);
 			}
-			;
 
 			bool getSmartSearch()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB4 & 0x20);
 			}
-			;
 
 			bool getLight()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB4 & 0x10);
 			}
-			;
+
+			uint8_t getFunctionGroup1()
+			{
+				lock_guard<recursive_mutex> lock(m_MLocInfo);
+				return (m_LocInfo.DB4 & 0x1F);
+			}
 
 			bool getF0()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB4 & 0x10);
 			}
-			;
 
 			bool getF1()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB4 & 0x01);
 			}
-			;
 
 			bool getF2()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB4 & 0x02);
 			}
-			;
 
 			bool getF3()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB4 & 0x04);
 			}
-			;
 
 			bool getF4()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB4 & 0x08);
 			}
-			;
+
+			uint8_t getFunctionGroup2()
+			{
+				lock_guard<recursive_mutex> lock(m_MLocInfo);
+				return (m_LocInfo.DB5 & 0x0F);
+			}
 
 			bool getF5()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB5 & 0x01);
 			}
-			;
 
 			bool getF6()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB5 & 0x02);
 			}
-			;
 
 			bool getF7()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB5 & 0x04);
 			}
-			;
 
 			bool getF8()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB5 & 0x08);
 			}
-			;
+
+			uint8_t getFunctionGroup3()
+			{
+				lock_guard<recursive_mutex> lock(m_MLocInfo);
+				return (m_LocInfo.DB5 >> 4);
+			}
 
 			bool getF9()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB5 & 0x10);
 			}
-			;
 
 			bool getF10()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB5 & 0x20);
 			}
-			;
 
 			bool getF11()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB5 & 0x40);
 			}
-			;
 
 			bool getF12()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB5 & 0x80);
 			}
-			;
+
+			uint8_t getFunctionGroup4()
+			{
+				lock_guard<recursive_mutex>lock(m_MLocInfo);
+				return (m_LocInfo.DB6);
+			}
 
 			bool getF13()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB6 & 0x01);
 			}
-			;
 
 			bool getF14()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB6 & 0x02);
 			}
-			;
 
 			bool getF15()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB6 & 0x04);
 			}
-			;
 
 			bool getF16()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB6 & 0x08);
 			}
-			;
 
 			bool getF17()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB6 & 0x10);
 			}
-			;
 
 			bool getF18()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB6 & 0x20);
 			}
-			;
 
 			bool getF19()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB6 & 0x40);
 			}
-			;
 
 			bool getF20()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB6 & 0x80);
 			}
-			;
+
+			uint8_t getFunctionGroup5()
+			{
+				lock_guard<recursive_mutex> lock(m_MLocInfo);
+				return (m_LocInfo.DB7);
+			}
 
 			bool getF21()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB7 & 0x01);
 			}
-			;
 
 			bool getF22()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB7 & 0x02);
 			}
-			;
 
 			bool getF23()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB7 & 0x04);
 			}
-			;
 
 			bool getF24()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB7 & 0x08);
 			}
-			;
 
 			bool getF25()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB7 & 0x10);
 			}
-			;
 
 			bool getF26()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB7 & 0x20);
 			}
-			;
 
 			bool getF27()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB7 & 0x40);
 			}
-			;
 
 			bool getF28()
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				return (m_LocInfo.DB7 & 0x80);
 			}
-			;
 
 			void setBusy(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB2 |= 0x08) : (m_LocInfo.DB2 &= ~(0x08));
 			}
-			;
 
 			void setSpeedsteps(uint8_t value)
 			{
@@ -306,21 +302,18 @@ namespace DCC_V3
 				m_LocInfo.DB2 &= ~(0x07);
 				m_LocInfo.DB2 |= (value & 0x07);
 			}
-			;
 
 			void setLocoDrive(uint8_t value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				m_LocInfo.DB3 = value;
 			}
-			;
 
 			void setDirection(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB3 |= 0x80) : (m_LocInfo.DB3 &= ~(0x80));
 			}
-			;
 
 			void setSpeed(uint8_t value)
 			{
@@ -328,231 +321,231 @@ namespace DCC_V3
 				m_LocInfo.DB3 &= ~(0x7F);
 				m_LocInfo.DB3 |= (value & 0x7F);
 			}
-			;
 
 			void setDualTraction(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB4 |= 0x40) : (m_LocInfo.DB4 &= ~(0x40));
 			}
-			;
 
 			void setSmartSearch(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB4 |= 0x20) : (m_LocInfo.DB4 &= ~(0x20));
 			}
-			;
+
+			void setFunctionGroup1(const uint8_t& value)
+			{
+				lock_guard<recursive_mutex> lock(m_MLocInfo);
+				m_LocInfo.DB4 &= ~0x1F;
+				m_LocInfo.DB4 |= (value & 0x1F);
+			}
 
 			void setLight(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB4 |= 0x10) : (m_LocInfo.DB4 &= ~(0x10));
 			}
-			;
 
 			void setF0(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB4 |= 0x10) : (m_LocInfo.DB4 &= ~(0x10));
 			}
-			;
 
 			void setF1(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB4 |= 0x01) : (m_LocInfo.DB4 &= ~(0x01));
 			}
-			;
 
 			void setF2(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB4 |= 0x02) : (m_LocInfo.DB4 &= ~(0x02));
 			}
-			;
 
 			void setF3(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB4 |= 0x04) : (m_LocInfo.DB4 &= ~(0x04));
 			}
-			;
 
 			void setF4(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB4 |= 0x08) : (m_LocInfo.DB4 &= ~(0x08));
 			}
-			;
+
+			void setFunctionGroup2(const uint8_t& value)
+			{
+				lock_guard<recursive_mutex> lock(m_MLocInfo);
+				m_LocInfo.DB5 &= 0xF0;
+				m_LocInfo.DB5 |= (value & 0x0F);
+			}
 
 			void setF5(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB5 |= 0x01) : (m_LocInfo.DB5 &= ~(0x01));
 			}
-			;
 
 			void setF6(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB5 |= 0x02) : (m_LocInfo.DB5 &= ~(0x02));
 			}
-			;
 
 			void setF7(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB5 |= 0x04) : (m_LocInfo.DB5 &= ~(0x04));
 			}
-			;
 
 			void setF8(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB5 |= 0x08) : (m_LocInfo.DB5 &= ~(0x08));
 			}
-			;
+
+			void setFunctionGroup3(const uint8_t& value)
+			{
+				lock_guard<recursive_mutex> lock(m_MLocInfo);
+				m_LocInfo.DB5 &= 0x0F;
+				m_LocInfo.DB5 &= (value << 4);
+			}
 
 			void setF9(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB5 |= 0x10) : (m_LocInfo.DB5 &= ~(0x10));
 			}
-			;
 
 			void setF10(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB5 |= 0x20) : (m_LocInfo.DB5 &= ~(0x20));
 			}
-			;
 
 			void setF11(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB5 |= 0x40) : (m_LocInfo.DB5 &= ~(0x40));
 			}
-			;
 
 			void setF12(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB5 |= 0x80) : (m_LocInfo.DB5 &= ~(0x80));
 			}
-			;
+
+			void setFunctionGroup4(const uint8_t& value)
+			{
+				lock_guard<recursive_mutex> lock(m_MLocInfo);
+				m_LocInfo.DB6 = value;
+			}
 
 			void setF13(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB6 |= 0x01) : (m_LocInfo.DB6 &= ~(0x01));
 			}
-			;
 
 			void setF14(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB6 |= 0x02) : (m_LocInfo.DB6 &= ~(0x02));
 			}
-			;
 
 			void setF15(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB6 |= 0x04) : (m_LocInfo.DB6 &= ~(0x04));
 			}
-			;
 
 			void setF16(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB6 |= 0x08) : (m_LocInfo.DB6 &= ~(0x08));
 			}
-			;
 
 			void setF17(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB6 |= 0x10) : (m_LocInfo.DB6 &= ~(0x10));
 			}
-			;
 
 			void setF18(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB6 |= 0x20) : (m_LocInfo.DB6 &= ~(0x20));
 			}
-			;
 
 			void setF19(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB6 |= 0x40) : (m_LocInfo.DB6 &= ~(0x40));
 			}
-			;
 
 			void setF20(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB6 |= 0x80) : (m_LocInfo.DB6 &= ~(0x80));
 			}
-			;
+
+			void setFunctionGroup5(const uint8_t& value)
+			{
+				lock_guard<recursive_mutex> lock(m_MLocInfo);
+				m_LocInfo.DB7 = value;
+			}
 
 			void setF21(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB7 |= 0x01) : (m_LocInfo.DB7 &= ~(0x01));
 			}
-			;
 
 			void setF22(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB7 |= 0x02) : (m_LocInfo.DB7 &= ~(0x02));
 			}
-			;
 
 			void setF23(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB7 |= 0x04) : (m_LocInfo.DB7 &= ~(0x04));
 			}
-			;
 
 			void setF24(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB7 |= 0x08) : (m_LocInfo.DB7 &= ~(0x08));
 			}
-			;
 
 			void setF25(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB7 |= 0x10) : (m_LocInfo.DB7 &= ~(0x10));
 			}
-			;
 
 			void setF26(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB7 |= 0x20) : (m_LocInfo.DB7 &= ~(0x20));
 			}
-			;
 
 			void setF27(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB7 |= 0x40) : (m_LocInfo.DB7 &= ~(0x40));
 			}
-			;
 
 			void setF28(bool value)
 			{
 				lock_guard<recursive_mutex> lock(m_MLocInfo);
 				value ? (m_LocInfo.DB7 |= 0x80) : (m_LocInfo.DB7 &= ~(0x80));
 			}
-			;
 
 		protected:
 
@@ -584,6 +577,8 @@ namespace DCC_V3
 			}__attribute__((packed)) m_LocMode;
 
 			recursive_mutex m_MLocMode;
+
+			map<uint16_t, uint8_t> m_CVs;
 
 	};
 } /* namespace DCC_V3 */

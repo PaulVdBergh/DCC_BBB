@@ -85,7 +85,7 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.cross.c.linker.2119263149" name="Cross GCC Linker" superClass="cdt.managedbuild.tool.gnu.cross.c.linker"/>
 							<tool id="cdt.managedbuild.tool.gnu.cross.cpp.linker.1049294063" name="Cross G++ Linker" superClass="cdt.managedbuild.tool.gnu.cross.cpp.linker">
-								<option id="gnu.cpp.link.option.flags.1077007015" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-lpthread" valueType="string"/>
+								<option id="gnu.cpp.link.option.flags.1077007015" name="Linker flags" superClass="gnu.cpp.link.option.flags" useByScannerDiscovery="false" value="-lpthread" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1738164925" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>

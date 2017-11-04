@@ -26,6 +26,7 @@
 using namespace std;
 
 #include "SocketInterface.h"
+#include "System.h"
 #include "XpressNetInterface.h"
 using namespace DCC_V3;
 
@@ -109,4 +110,3 @@ int main(int argc, char** argv)
 
 	return 0;
 }
-

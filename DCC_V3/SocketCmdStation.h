@@ -40,13 +40,11 @@ namespace DCC_V3
 			{
 				return m_Address;
 			}
-			;
 
 			int& getMySocket(void)
 			{
 				return m_sock_me;
 			}
-			;
 
 		protected:
 			int m_sock_me;
@@ -55,6 +53,7 @@ namespace DCC_V3
 		private:
 
 	};
+
 } /* namespace DCC_V3 */
 
 #endif /* SOCKETCMDSTATION_H */

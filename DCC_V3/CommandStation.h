@@ -43,8 +43,7 @@ namespace DCC_V3
 			void setBroadcastFlags(const uint32_t& flags);
 			const uint8_t* getLAN_BROADCASTFLAGS(void);
 
-			static CommandStation* find(int& sock_me,
-			        const struct sockaddr_in& address);
+			static CommandStation* find(int& sock_me, const struct sockaddr_in& address);
 			static void replyAll(const uint32_t& flags, const uint8_t* payload);
 
 		protected:

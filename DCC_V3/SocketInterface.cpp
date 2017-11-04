@@ -26,6 +26,7 @@
 
 #include "CommandStation.h"
 #include "LocDecoder.h"
+#include "System.h"
 #include "Z21LANProtocol.h"
 
 #include <algorithm>
@@ -40,8 +41,7 @@ namespace DCC_V3
 
 	SocketInterface* SocketInterface::getInstance(const in_port_t& port)
 	{
-		map<in_port_t, SocketInterface*>::iterator it = sm_SocketInterfaces.find(
-		        port);
+		map<in_port_t, SocketInterface*>::iterator it = sm_SocketInterfaces.find(port);
 		if (it == sm_SocketInterfaces.end())
 		{
 			SocketInterface* pNew = new SocketInterface(port);
@@ -61,15 +61,13 @@ namespace DCC_V3
 		m_sock_me = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
 		int optVal = 1;
-		result = setsockopt(m_sock_me, SOL_SOCKET, SO_REUSEADDR, &optVal,
-		        sizeof(optVal));
+		result = setsockopt(m_sock_me, SOL_SOCKET, SO_REUSEADDR, &optVal, sizeof(optVal));
 		if (-1 == result)
 		{
 			exit(-1);
 		}
 
-		result = setsockopt(m_sock_me, SOL_SOCKET, SO_REUSEPORT, &optVal,
-		        sizeof(optVal));
+		result = setsockopt(m_sock_me, SOL_SOCKET, SO_REUSEPORT, &optVal, sizeof(optVal));
 		if (-1 == result)
 		{
 			exit(-1);
@@ -79,8 +77,7 @@ namespace DCC_V3
 		m_sockaddr_me.sin_family = AF_INET;
 		m_sockaddr_me.sin_port = htons(m_port);
 		m_sockaddr_me.sin_addr.s_addr = htonl(INADDR_ANY);
-		result = bind(m_sock_me, (struct sockaddr*)&m_sockaddr_me,
-		        sizeof(m_sockaddr_me));
+		result = bind(m_sock_me, (struct sockaddr*)&m_sockaddr_me, sizeof(m_sockaddr_me));
 		if (-1 == result)
 		{
 			exit(-1);
@@ -162,8 +159,7 @@ namespace DCC_V3
 				}
 			}
 
-			for (int notification = 0; notification < notifications;
-			        notification++)
+			for (int notification = 0; notification < notifications; notification++)
 			{
 				if (m_fdStop == evlist[notification].data.fd)
 				{
@@ -175,8 +171,7 @@ namespace DCC_V3
 					struct sockaddr_in si_other;
 					socklen_t slen = sizeof(si_other);
 
-					int recv_len = recvfrom(m_sock_me, recvbuffer, 128, 0,
-					        (struct sockaddr*)&si_other, &slen);
+					int recv_len = recvfrom(m_sock_me, recvbuffer, 128, 0, (struct sockaddr*)&si_other, &slen);
 					uint8_t* payload = recvbuffer;
 					while(payload < (recvbuffer + recv_len))
 					{
@@ -185,39 +180,29 @@ namespace DCC_V3
 						location += sprintf(msg, "msg received : ");
 						for (uint8_t ii = 0; ii < payload[0]; ii++)
 						{
-							location += sprintf(location, " 0x%02X",
-							        payload[ii]);
+							location += sprintf(location, " 0x%02X", payload[ii]);
 						}
 						location += sprintf(location, "   ");
 						switch (*(uint32_t*)payload)
 						{
 							case 0x00100004: //  LAN_GET_SERIAL_NUMBER
 							{
-								location += sprintf(location,
-								        "LAN_GET_SERIAL_NUMBER\n");
-								sendto(m_sock_me, LAN_SERIAL_NUMBER,
-								        LAN_SERIAL_NUMBER[0], 0,
-								        (struct sockaddr*)&si_other,
-								        sizeof(si_other));
+								location += sprintf(location, "LAN_GET_SERIAL_NUMBER\n");
+								sendto(m_sock_me, LAN_SERIAL_NUMBER, LAN_SERIAL_NUMBER[0], 0, (struct sockaddr*)&si_other, sizeof(si_other));
 								break;
 							}
 
 							case 0x00180004: //  LAN_GET_CODE
 							{
 								location += sprintf(location, "LAN_GET_CODE\n");
-								sendto(m_sock_me, LAN_CODE, LAN_CODE[0], 0,
-								        (struct sockaddr*)&si_other,
-								        sizeof(si_other));
+								sendto(m_sock_me, LAN_CODE, LAN_CODE[0], 0, (struct sockaddr*)&si_other, sizeof(si_other));
 								break;
 							}
 
 							case 0x001A0004: //  LAN_GET_HWINFO
 							{
-								location += sprintf(location,
-								        "LAN_GET_HWINFO\n");
-								sendto(m_sock_me, LAN_HWINFO, LAN_HWINFO[0], 0,
-								        (struct sockaddr*)&si_other,
-								        sizeof(si_other));
+								location += sprintf(location, "LAN_GET_HWINFO\n");
+								sendto(m_sock_me, LAN_HWINFO, LAN_HWINFO[0], 0, (struct sockaddr*)&si_other, sizeof(si_other));
 								break;
 							}
 
@@ -229,47 +214,34 @@ namespace DCC_V3
 
 							case 0x00510004: //  LAN_GET_BROADCASTFLAGS
 							{
-								location += sprintf(location,
-								        "LAN_GET_BROADCASTFLAGS\n");
-								const uint8_t* pMsg =
-								        (CommandStation::find(m_sock_me,
-								                si_other))->getLAN_BROADCASTFLAGS();
-								sendto(m_sock_me, pMsg, pMsg[0], 0,
-								        (struct sockaddr*)&si_other,
-								        sizeof(si_other));
+								location += sprintf(location, "LAN_GET_BROADCASTFLAGS\n");
+								const uint8_t* pMsg = (CommandStation::find(m_sock_me, si_other))->getLAN_BROADCASTFLAGS();
+								sendto(m_sock_me, pMsg, pMsg[0], 0, (struct sockaddr*)&si_other, sizeof(si_other));
 								break;
 							}
 
 							case 0x00850004: //  LAN_SYSTEMSTATE_GETDATA
 							{
-								location += sprintf(location,
-								        "LAN_SYSTEMSTATE_GETDATA\n");
-								sendto(m_sock_me,
-								        &SocketInterface::sm_LAN_SystemState,
-								        sizeof(struct SocketInterface::LAN_SystemState),
-								        0, (struct sockaddr*)&si_other,
-								        sizeof(si_other));
+								location += sprintf(location, "LAN_SYSTEMSTATE_GETDATA\n");
+								sendto(m_sock_me, &SystemState, sizeof(struct SystemState), 0, (struct sockaddr*)&si_other, sizeof(si_other));
 								break;
 							}
 
 							case 0x00A20004: //  LAN_LOCONET_FROM_LAN
 							{
-								location += sprintf(location,
-								        "LAN_LOCONET_FROM_LAN\n");
+								location += sprintf(location, "LAN_LOCONET_FROM_LAN\n");
 								break;
 							}
 
 							case 0x00810005: //  LAN_RMBUS_GETDATA
 							{
-								location += sprintf(location,
-								        "LAN_RMBUS_GETDATA\n");
+								location += sprintf(location, "LAN_RMBUS_GETDATA\n");
 								break;
 							}
 
 							case 0x00820005: //  LAN_RMBUS_PROGRAMMODULE
 							{
-								location += sprintf(location,
-								        "LAN_RMBUS_PROGRAMMODULE\n");
+								location += sprintf(location, "LAN_RMBUS_PROGRAMMODULE\n");
 								break;
 							}
 
@@ -277,28 +249,21 @@ namespace DCC_V3
 							{
 								if (*(uint16_t*)&payload[4] == 0x8080) //  LAN_X_SET_STOP
 								{
-									location += sprintf(location,
-									        "LAN_X_SET_STOP\n");
-									SocketInterface::sm_LAN_SystemState.CentralState |=
-									        0x01;
-									CommandStation::replyAll(0x00000001,
-									        LAN_X_BC_STOPPED);
+									location += sprintf(location, "LAN_X_SET_STOP\n");
+									SystemState.CentralState |= 0x01;
+									CommandStation::replyAll(0x00000001, LAN_X_BC_STOPPED);
 
 									uint8_t locInfo[14];
-									lock_guard<recursive_mutex> guard(
-									        Decoder::sm_MDecoders);
-									map<uint16_t, Decoder*>::iterator it =
-									        Decoder::sm_Decoders.begin();
+									lock_guard<recursive_mutex> guard(Decoder::sm_MDecoders);
+									map<uint16_t, Decoder*>::iterator it = Decoder::sm_Decoders.begin();
 									while(it != Decoder::sm_Decoders.end())
 									{
-										LocDecoder* pLoc =
-										        dynamic_cast<LocDecoder*>(it->second);
+										LocDecoder* pLoc = dynamic_cast<LocDecoder*>(it->second);
 										if (pLoc)
 										{
 											pLoc->setSpeed(0x00);
 											pLoc->getLocInfo(locInfo);
-											CommandStation::replyAll(0x00000001,
-											        locInfo);
+											CommandStation::replyAll(0x00000001, locInfo);
 										}
 										it++;
 									}
@@ -308,27 +273,20 @@ namespace DCC_V3
 
 							case 0x00600006: //  LAN_GET_LOCMODE
 							{
-								uint16_t locAddress = (payload[4] << 8)
-								        + payload[5];
-								Decoder* pDecoder = Decoder::getDecoder(
-								        locAddress);
+								uint16_t locAddress = (payload[4] << 8) + payload[5];
+								Decoder* pDecoder = Decoder::getDecoder(locAddress);
 								if (pDecoder == NULL)
 								{
 									pDecoder = new LocDecoder(locAddress);
 								}
-								LocDecoder* pLoc =
-								        dynamic_cast<LocDecoder*>(pDecoder);
+								LocDecoder* pLoc = dynamic_cast<LocDecoder*>(pDecoder);
 								if (pLoc)
 								{
 									uint8_t locMode[7];
 									pLoc->getLocMode(locMode);
-									sendto(m_sock_me, locMode, locMode[0], 0,
-									        (struct sockaddr*)&si_other,
-									        sizeof(si_other));
+									sendto(m_sock_me, locMode, locMode[0], 0, (struct sockaddr*)&si_other, sizeof(si_other));
 								}
-								location += sprintf(location,
-								        "LAN_GET_LOCMODE  Address = %i\n",
-								        locAddress);
+								location += sprintf(location, "LAN_GET_LOCMODE  Address = %i\n", locAddress);
 								break;
 							}
 
@@ -341,8 +299,7 @@ namespace DCC_V3
 
 							case 0x00A30006: //  LAN_LOCONET_DISPATCH_ADDR
 							{
-								location += sprintf(location,
-								        "LAN_LOCONET_DISPATCH_ADDR\n");
+								location += sprintf(location, "LAN_LOCONET_DISPATCH_ADDR\n");
 								break;
 							}
 
@@ -354,12 +311,8 @@ namespace DCC_V3
 									{
 										if (payload[6] == 0x00) //  xor check
 										{
-											location += sprintf(location,
-											        "LAN_X_GET_VERSION\n");
-											sendto(m_sock_me, LAN_X_VERSION,
-											        LAN_X_VERSION[0], 0,
-											        (struct sockaddr*)&si_other,
-											        sizeof(si_other));
+											location += sprintf(location, "LAN_X_GET_VERSION\n");
+											sendto(m_sock_me, LAN_X_VERSION, LAN_X_VERSION[0], 0, (struct sockaddr*)&si_other, sizeof(si_other));
 										}
 										break;
 									}
@@ -368,20 +321,16 @@ namespace DCC_V3
 									{
 										if (payload[6] == 0x05)
 										{
-											location += sprintf(location,
-											        "LAN_X_GET_STATUS\n");
+											location += sprintf(location, "LAN_X_GET_STATUS\n");
 											uint8_t status[8];
 											memcpy(status, LAN_X_STATUS, 8);
-											status[6] =
-											        SocketInterface::sm_LAN_SystemState.CentralState;
+											status[6] = SystemState.CentralState;
 											status[7] = 0;
 											for (uint8_t i = 4; i < 7; i++)
 											{
 												status[7] ^= status[i];
 											}
-											sendto(m_sock_me, status, 8, 0,
-											        (struct sockaddr*)&si_other,
-											        sizeof(si_other));
+											sendto(m_sock_me, status, 8, 0, (struct sockaddr*)&si_other, sizeof(si_other));
 										}
 										break;
 									}
@@ -390,13 +339,9 @@ namespace DCC_V3
 									{
 										if (payload[6] == 0xA1)
 										{
-											location +=
-											        sprintf(location,
-											                "LAN_X_SET_TRACK_POWER_OFF\n");
-											SocketInterface::sm_LAN_SystemState.CentralState |=
-											        0x02;
-											CommandStation::replyAll(0x00000001,
-											        LAN_X_BC_TRACK_POWER_OFF);
+											location += sprintf(location, "LAN_X_SET_TRACK_POWER_OFF\n");
+											SystemState.CentralState |= 0x02;
+											CommandStation::replyAll(0x00000001, LAN_X_BC_TRACK_POWER_OFF);
 										}
 										break;
 									}
@@ -405,13 +350,9 @@ namespace DCC_V3
 									{
 										if (payload[6] == 0xA0)
 										{
-											location +=
-											        sprintf(location,
-											                "LAN_X_SET_TRACK_POWER_ON\n");
-											SocketInterface::sm_LAN_SystemState.CentralState =
-											        0x00;
-											CommandStation::replyAll(0x00000001,
-											        LAN_X_BC_TRACK_POWER_ON);
+											location += sprintf(location, "LAN_X_SET_TRACK_POWER_ON\n");
+											SystemState.CentralState = 0x00;
+											CommandStation::replyAll(0x00000001, LAN_X_BC_TRACK_POWER_ON);
 										}
 										break;
 									}
@@ -420,15 +361,8 @@ namespace DCC_V3
 									{
 										if (payload[6] == 0xFB)
 										{
-											location +=
-											        sprintf(location,
-											                "LAN_X_GET_FIRMWARE_VERSION\n");
-											sendto(m_sock_me,
-											        LAN_X_FIRMWARE_VERSION,
-											        LAN_X_FIRMWARE_VERSION[0],
-											        0,
-											        (struct sockaddr*)&si_other,
-											        sizeof(si_other));
+											location += sprintf(location, "LAN_X_GET_FIRMWARE_VERSION\n");
+											sendto(m_sock_me, LAN_X_FIRMWARE_VERSION, LAN_X_FIRMWARE_VERSION[0], 0, (struct sockaddr*)&si_other, sizeof(si_other));
 										}
 										break;
 									}
@@ -443,36 +377,31 @@ namespace DCC_V3
 
 							case 0x00610007: //  LAN_SET_LOCOMODE
 							{
-								location += sprintf(location,
-								        "LAN_SET_LOCOMODE\n");
+								location += sprintf(location, "LAN_SET_LOCOMODE\n");
 								break;
 							}
 
 							case 0x00710007: //  LAN_SET_TURNOUTMODE
 							{
-								location += sprintf(location,
-								        "LAN_SET_TURNOUTMODE\n");
+								location += sprintf(location, "LAN_SET_TURNOUTMODE\n");
 								break;
 							}
 
 							case 0x00890007: //  LAN_RAILCOM_GETDATA
 							{
-								location += sprintf(location,
-								        "LAN_RAILCOM_GETDATA\n");
+								location += sprintf(location, "LAN_RAILCOM_GETDATA\n");
 								break;
 							}
 
 							case 0x00A40007: //  LAN_LOCONET_DETECTOR
 							{
-								location += sprintf(location,
-								        "LAN_LOCONET_DETECTOR\n");
+								location += sprintf(location, "LAN_LOCONET_DETECTOR\n");
 								break;
 							}
 
 							case 0x00C40007: //  LAN_CAN_DETECTOR
 							{
-								location += sprintf(location,
-								        "LAN_CAN_DETECTOR\n");
+								location += sprintf(location, "LAN_CAN_DETECTOR\n");
 								break;
 							}
 
@@ -484,18 +413,14 @@ namespace DCC_V3
 									{
 										if (payload[5] == 0x11) //  LAN_X_DCC_READ_REGISTER
 										{
-											location +=
-											        sprintf(location,
-											                "LAN_X_DCC_READ_REGISTER\n");
-
+											location += sprintf(location, "LAN_X_DCC_READ_REGISTER\n");
 										}
 										break;
 									}
 
 									case 0x43: //  LAN_X_GET_TURNOUT_INFO
 									{
-										location += sprintf(location,
-										        "LAN_X_GET_TURNOUT_INFO\n");
+										location += sprintf(location, "LAN_X_GET_TURNOUT_INFO\n");
 										break;
 									}
 
@@ -509,11 +434,8 @@ namespace DCC_V3
 
 							case 0x00500008: //  LAN_SET_BROADCASTFLAGS
 							{
-								location += sprintf(location,
-								        "LAN_SET_BROADCASTFLAGS : 0x%08X\n",
-								        (*(uint32_t*)&payload[4]));
-								(CommandStation::find(m_sock_me, si_other))->setBroadcastFlags(
-								        *(uint32_t*)&payload[4]);
+								location += sprintf(location, "LAN_SET_BROADCASTFLAGS : 0x%08X\n", (*(uint32_t*)&payload[4]));
+								(CommandStation::find(m_sock_me, si_other))->setBroadcastFlags(*(uint32_t*)&payload[4]);
 								break;
 							}
 
@@ -527,16 +449,13 @@ namespace DCC_V3
 										{
 											case 0x11: //  LAN_X_CV_READ
 											{
-												location += sprintf(location,
-												        "LAN_X_CV_READ\n");
+												location += sprintf(location, "LAN_X_CV_READ\n");
 												break;
 											}
 
 											case 0x12: //  LAN_X_DCC_WRITE_REGISTER
 											{
-												location +=
-												        sprintf(location,
-												                "LAN_X_DCC_WRITE_REGISTER\n");
+												location += sprintf(location, "LAN_X_DCC_WRITE_REGISTER\n");
 												break;
 											}
 
@@ -549,34 +468,25 @@ namespace DCC_V3
 
 									case 0x53: //  LAN_X_SET_TURNOUT
 									{
-										location += sprintf(location,
-										        "LAN_X_SET_TURNOUT\n");
+										location += sprintf(location, "LAN_X_SET_TURNOUT\n");
 										break;
 									}
 
 									case 0xE3: //  LAN_X_GET_LOCO_INFO
 									{
-										uint16_t locAddress = ((payload[6]
-										        & 0x3F) << 8) + payload[7];
-										location +=
-										        sprintf(location,
-										                "LAN_X_GET_LOCO_INFO  Loc = %i\n",
-										                locAddress);
-										Decoder* pDecoder = Decoder::getDecoder(
-										        locAddress);
+										uint16_t locAddress = ((payload[6] & 0x3F) << 8) + payload[7];
+										location += sprintf(location, "LAN_X_GET_LOCO_INFO  Loc = %i\n", locAddress);
+										Decoder* pDecoder = Decoder::getDecoder(locAddress);
 										if (pDecoder == NULL)
 										{
-											pDecoder = new LocDecoder(
-											        locAddress);
+											pDecoder = new LocDecoder(locAddress);
 										}
-										LocDecoder* pLoc =
-										        dynamic_cast<LocDecoder*>(pDecoder);
+										LocDecoder* pLoc = dynamic_cast<LocDecoder*>(pDecoder);
 										if (pLoc)
 										{
 											uint8_t infoMessage[14];
 											pLoc->getLocInfo(infoMessage);
-											CommandStation::replyAll(0x00000001,
-											        infoMessage);
+											CommandStation::replyAll(0x00000001, infoMessage);
 										}
 										break;
 									}
@@ -593,41 +503,31 @@ namespace DCC_V3
 							{
 								if (payload[4] == 0xE4)
 								{
-									uint16_t locAddress = ((payload[6] & 0x3F)
-									        << 8) + payload[7];
-									Decoder* pDecoder = Decoder::getDecoder(
-									        locAddress);
+									uint16_t locAddress = ((payload[6] & 0x3F) << 8) + payload[7];
+									Decoder* pDecoder = Decoder::getDecoder(locAddress);
 									if (pDecoder == NULL)
 									{
 										pDecoder = new LocDecoder(locAddress);
 									}
-									LocDecoder* pLoc =
-									        dynamic_cast<LocDecoder*>(pDecoder);
+									LocDecoder* pLoc = dynamic_cast<LocDecoder*>(pDecoder);
 									if (pLoc)
 									{
 										if (payload[5] == 0xF8) //  LAN_X_SET_LOCO_FUNCTION
 										{
-											uint8_t FunctionIndex = payload[8]
-											        & 0x3F;
+											uint8_t FunctionIndex = payload[8] & 0x3F;
 											uint8_t Type = payload[8] >> 5;
-											location +=
-											        sprintf(location,
-											                "LAN_X_SET_LOCO_FUNCTION  loc %i function %i\n",
-											                locAddress,
-											                FunctionIndex);
+											location += sprintf(location, "LAN_X_SET_LOCO_FUNCTION  loc %i function %i\n", locAddress, FunctionIndex);
 											switch (FunctionIndex)
 											{
 												case 0:
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF0(
-														        Type & 0x01);
+														pLoc->setF0(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF0(
-														        !pLoc->getF0());
+														pLoc->setF0(!pLoc->getF0());
 													}
 													break;
 												}
@@ -635,13 +535,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF1(
-														        Type & 0x01);
+														pLoc->setF1(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF1(
-														        !pLoc->getF1());
+														pLoc->setF1(!pLoc->getF1());
 													}
 													break;
 												}
@@ -649,13 +547,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF2(
-														        Type & 0x01);
+														pLoc->setF2(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF2(
-														        !pLoc->getF2());
+														pLoc->setF2(!pLoc->getF2());
 													}
 													break;
 												}
@@ -663,13 +559,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF3(
-														        Type & 0x01);
+														pLoc->setF3(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF3(
-														        !pLoc->getF3());
+														pLoc->setF3(!pLoc->getF3());
 													}
 													break;
 												}
@@ -677,13 +571,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF4(
-														        Type & 0x01);
+														pLoc->setF4(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF4(
-														        !pLoc->getF4());
+														pLoc->setF4(!pLoc->getF4());
 													}
 													break;
 												}
@@ -691,13 +583,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF5(
-														        Type & 0x01);
+														pLoc->setF5(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF5(
-														        !pLoc->getF5());
+														pLoc->setF5(!pLoc->getF5());
 													}
 													break;
 												}
@@ -705,13 +595,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF6(
-														        Type & 0x01);
+														pLoc->setF6(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF6(
-														        !pLoc->getF6());
+														pLoc->setF6(!pLoc->getF6());
 													}
 													break;
 												}
@@ -719,13 +607,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF7(
-														        Type & 0x01);
+														pLoc->setF7(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF7(
-														        !pLoc->getF7());
+														pLoc->setF7(!pLoc->getF7());
 													}
 													break;
 												}
@@ -733,13 +619,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF8(
-														        Type & 0x01);
+														pLoc->setF8(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF8(
-														        !pLoc->getF8());
+														pLoc->setF8(!pLoc->getF8());
 													}
 													break;
 												}
@@ -747,13 +631,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF9(
-														        Type & 0x01);
+														pLoc->setF9(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF9(
-														        !pLoc->getF9());
+														pLoc->setF9(!pLoc->getF9());
 													}
 													break;
 												}
@@ -761,13 +643,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF10(
-														        Type & 0x01);
+														pLoc->setF10(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF10(
-														        !pLoc->getF10());
+														pLoc->setF10(!pLoc->getF10());
 													}
 													break;
 												}
@@ -775,13 +655,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF11(
-														        Type & 0x01);
+														pLoc->setF11(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF11(
-														        !pLoc->getF11());
+														pLoc->setF11(!pLoc->getF11());
 													}
 													break;
 												}
@@ -789,13 +667,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF12(
-														        Type & 0x01);
+														pLoc->setF12(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF12(
-														        !pLoc->getF12());
+														pLoc->setF12(!pLoc->getF12());
 													}
 													break;
 												}
@@ -803,13 +679,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF13(
-														        Type & 0x01);
+														pLoc->setF13(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF13(
-														        !pLoc->getF13());
+														pLoc->setF13(!pLoc->getF13());
 													}
 													break;
 												}
@@ -817,13 +691,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF14(
-														        Type & 0x01);
+														pLoc->setF14(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF14(
-														        !pLoc->getF14());
+														pLoc->setF14(!pLoc->getF14());
 													}
 													break;
 												}
@@ -831,13 +703,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF15(
-														        Type & 0x01);
+														pLoc->setF15(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF15(
-														        !pLoc->getF15());
+														pLoc->setF15(!pLoc->getF15());
 													}
 													break;
 												}
@@ -845,13 +715,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF16(
-														        Type & 0x01);
+														pLoc->setF16(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF16(
-														        !pLoc->getF16());
+														pLoc->setF16(!pLoc->getF16());
 													}
 													break;
 												}
@@ -859,13 +727,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF17(
-														        Type & 0x01);
+														pLoc->setF17(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF17(
-														        !pLoc->getF17());
+														pLoc->setF17(!pLoc->getF17());
 													}
 													break;
 												}
@@ -873,13 +739,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF18(
-														        Type & 0x01);
+														pLoc->setF18(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF18(
-														        !pLoc->getF18());
+														pLoc->setF18(!pLoc->getF18());
 													}
 													break;
 												}
@@ -887,13 +751,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF19(
-														        Type & 0x01);
+														pLoc->setF19(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF19(
-														        !pLoc->getF19());
+														pLoc->setF19(!pLoc->getF19());
 													}
 													break;
 												}
@@ -901,13 +763,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF20(
-														        Type & 0x01);
+														pLoc->setF20(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF20(
-														        !pLoc->getF20());
+														pLoc->setF20(!pLoc->getF20());
 													}
 													break;
 												}
@@ -915,13 +775,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF21(
-														        Type & 0x01);
+														pLoc->setF21(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF21(
-														        !pLoc->getF21());
+														pLoc->setF21(!pLoc->getF21());
 													}
 													break;
 												}
@@ -929,13 +787,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF22(
-														        Type & 0x01);
+														pLoc->setF22(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF22(
-														        !pLoc->getF22());
+														pLoc->setF22(!pLoc->getF22());
 													}
 													break;
 												}
@@ -943,13 +799,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF23(
-														        Type & 0x01);
+														pLoc->setF23(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF23(
-														        !pLoc->getF23());
+														pLoc->setF23(!pLoc->getF23());
 													}
 													break;
 												}
@@ -957,13 +811,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF24(
-														        Type & 0x01);
+														pLoc->setF24(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF24(
-														        !pLoc->getF24());
+														pLoc->setF24(!pLoc->getF24());
 													}
 													break;
 												}
@@ -971,13 +823,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF25(
-														        Type & 0x01);
+														pLoc->setF25(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF25(
-														        !pLoc->getF25());
+														pLoc->setF25(!pLoc->getF25());
 													}
 													break;
 												}
@@ -985,13 +835,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF26(
-														        Type & 0x01);
+														pLoc->setF26(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF26(
-														        !pLoc->getF26());
+														pLoc->setF26(!pLoc->getF26());
 													}
 													break;
 												}
@@ -999,13 +847,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF27(
-														        Type & 0x01);
+														pLoc->setF27(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF27(
-														        !pLoc->getF27());
+														pLoc->setF27(!pLoc->getF27());
 													}
 													break;
 												}
@@ -1013,13 +859,11 @@ namespace DCC_V3
 												{
 													if (!(Type & 0x02))
 													{
-														pLoc->setF28(
-														        Type & 0x01);
+														pLoc->setF28(Type & 0x01);
 													}
 													else if (Type == 0x02)
 													{
-														pLoc->setF28(
-														        !pLoc->getF28());
+														pLoc->setF28(!pLoc->getF28());
 													}
 													break;
 												}
@@ -1031,20 +875,15 @@ namespace DCC_V3
 										}
 										else if ((payload[5] & 0xF0) == 0x10) //  LAN_X_SET_LOCO_DRIVE
 										{
-											location +=
-											        sprintf(location,
-											                "LAN_X_SET_LOCO_DRIVE  Loc = %i \n",
-											                locAddress);
-											if (0
-											        == SocketInterface::sm_LAN_SystemState.CentralState)
+											location += sprintf(location, "LAN_X_SET_LOCO_DRIVE  Loc = %i \n", locAddress);
+											if (0 == SystemState.CentralState)
 											{
 												pLoc->setLocoDrive(payload[8]);
 											}
 
 											uint8_t infoMessage[14];
 											pLoc->getLocInfo(infoMessage);
-											CommandStation::replyAll(0x00000001,
-											        infoMessage);
+											CommandStation::replyAll(0x00000001, infoMessage);
 										}
 										else
 										{
@@ -1052,23 +891,18 @@ namespace DCC_V3
 										}
 										uint8_t locInfo[14];
 										pLoc->getLocInfo(locInfo);
-										CommandStation::replyAll(0x00000001,
-										        locInfo);
+										CommandStation::replyAll(0x00000001, locInfo);
 									}
 								}
 								else if (payload[4] == 0x24)
 								{
 									if (payload[5] == 0x12) //  LAN_X_CV_WRITE
 									{
-										location += sprintf(location,
-										        "LAN_X_CV_WRITE\n");
-
+										location += sprintf(location, "LAN_X_CV_WRITE\n");
 									}
 									else if (payload[5] == 0xFF) //  LAN_X_MM_WRITE_BYTE
 									{
-										location += sprintf(location,
-										        "LAN_X_MM_WRITE_BYTE\n");
-
+										location += sprintf(location, "LAN_X_MM_WRITE_BYTE\n");
 									}
 								}
 								break;
@@ -1082,26 +916,18 @@ namespace DCC_V3
 									{
 										if ((payload[8] & 0xFC) == 0xEC) //  LAN_X_CV_POM_WRITE_BYTE
 										{
-											location +=
-											        sprintf(location,
-											                "LAN_X_CV_POM_WRITE_BYTE\n");
+											location += sprintf(location, "LAN_X_CV_POM_WRITE_BYTE\n");
 
 										}
 										else if ((payload[8] & 0xFC) == 0xE8)
 										{
 											if (payload[10] == 0x00) //  LAN_X_POM_READ_BYTE
 											{
-												location +=
-												        sprintf(location,
-												                "LAN_X_POM_READ_BYTE\n");
-
+												location += sprintf(location, "LAN_X_POM_READ_BYTE\n");
 											}
 											else //  LAN_X_POM_WRITE_BIT
 											{
-												location +=
-												        sprintf(location,
-												                "LAN_X_POM_WRITE_BIT\n");
-
+												location += sprintf(location, "LAN_X_POM_WRITE_BIT\n");
 											}
 										}
 										break;
@@ -1111,24 +937,17 @@ namespace DCC_V3
 									{
 										if ((payload[8] & 0xFC) == 0xEC) //  LAN_X_CV_POM_ACCESSORY_WRITE_BYTE
 										{
-											location +=
-											        sprintf(location,
-											                "LAN_X_CV_POM_ACCESSORY_WRITE_BYTE\n");
-
+											location += sprintf(location, "LAN_X_CV_POM_ACCESSORY_WRITE_BYTE\n");
 										}
 										else if ((payload[8] & 0xFC) == 0xE8)
 										{
 											if (payload[10] == 0x00) //  LAN_X_POM_ACCESSORY_READ_BYTE
 											{
-												location +=
-												        sprintf(location,
-												                "LAN_X_POM_ACCESSORY_READ_BYTE\n");
+												location += sprintf(location, "LAN_X_POM_ACCESSORY_READ_BYTE\n");
 											}
 											else //  LAN_X_POM_ACCESSORY_WRITE_BIT
 											{
-												location +=
-												        sprintf(location,
-												                "LAN_X_POM_ACCESSORY_WRITE_BIT\n");
+												location += sprintf(location, "LAN_X_POM_ACCESSORY_WRITE_BIT\n");
 											}
 										}
 										break;
@@ -1154,8 +973,6 @@ namespace DCC_V3
 			}
 		}
 	}
-
-	struct SocketInterface::LAN_SystemState SocketInterface::sm_LAN_SystemState;
 	map<in_port_t, SocketInterface*> SocketInterface::sm_SocketInterfaces;
 
 } /* namespace DCC_V3 */

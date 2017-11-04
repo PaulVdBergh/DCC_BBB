@@ -57,6 +57,8 @@ namespace DCC_V3
 
 			void threadFunc(void);
 
+/*
+
 			struct LAN_SystemState
 			{
 					uint8_t DataLen = 0x14;
@@ -76,7 +78,7 @@ namespace DCC_V3
 			}__attribute__((packed));
 
 			static struct LAN_SystemState sm_LAN_SystemState;
-
+*/
 			static map<in_port_t, SocketInterface*> sm_SocketInterfaces;
 	};
 } /* namespace DCC_V3 */

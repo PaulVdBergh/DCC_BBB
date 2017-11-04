@@ -57,6 +57,7 @@ namespace DCC_V3
 			static thread m_thread;
 			static map<uint16_t, Decoder*> sm_Decoders;
 			static recursive_mutex sm_MDecoders;
+
 		private:
 
 	};
