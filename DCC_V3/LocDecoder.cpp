@@ -24,6 +24,8 @@
 
 #include "LocDecoder.h"
 
+#include "System.h"
+
 #include <cstring>
 
 namespace DCC_V3
@@ -56,41 +58,54 @@ namespace DCC_V3
 	{
 		static uint8_t state = 0;
 
-		switch(state)
+		if(SystemState.CentralState)
 		{
-			case 0:
+			lock_guard<recursive_mutex> lock(m_MLocInfo);
+			pMsg[0] = 4;
+			pMsg[1] = m_LocInfo.Addr_LSB;
+			pMsg[2] = 0x40;
+			pMsg[2] |= 0x01;
+			pMsg[3] = pMsg[1] ^ pMsg[2];
+			return true;
+		}
+		else
+		{
+			switch(state)
 			{
-				//	Speed message
-				lock_guard<recursive_mutex> lock(m_MLocInfo);
-				pMsg[0] = 4;
-				pMsg[1] = m_LocInfo.Addr_LSB;
-				pMsg[2] = 0x40;
-				if(getDirection()) pMsg[2] |= 0x20;
-				pMsg[2] |= getSpeed();
-				pMsg[3] = pMsg[1] ^ pMsg[2];
-				state++;
-				return true;
-			}
-			case 1:
-			{
-				//	Function (F0 - F4) Message
-				lock_guard<recursive_mutex> lock(m_MLocInfo);
-				pMsg[0] = 4;
-				pMsg[1] = m_LocInfo.Addr_LSB;
-				pMsg[2] = 0x80 | (m_LocInfo.DB4 & 0x1F);
-				pMsg[3] = pMsg[1] ^ pMsg[2];
-				state++;
-				return true;
-			}
-			default:
-			{
-				state = 0;
+				case 0:
+				{
+					//	Speed message
+					lock_guard<recursive_mutex> lock(m_MLocInfo);
+					pMsg[0] = 4;
+					pMsg[1] = m_LocInfo.Addr_LSB;
+					pMsg[2] = 0x40;
+					if(getDirection()) pMsg[2] |= 0x20;
+					pMsg[2] |= getSpeed();
+					pMsg[3] = pMsg[1] ^ pMsg[2];
+					state++;
+					return true;
+				}
+				case 1:
+				{
+					//	Function (F0 - F4) Message
+					lock_guard<recursive_mutex> lock(m_MLocInfo);
+					pMsg[0] = 4;
+					pMsg[1] = m_LocInfo.Addr_LSB;
+					pMsg[2] = 0x80 | (m_LocInfo.DB4 & 0x1F);
+					pMsg[3] = pMsg[1] ^ pMsg[2];
+					state++;
+					return true;
+				}
+				default:
+				{
+					state = 0;
+				}
 			}
 		}
 		return false;
 	}
 
-	void LocDecoder::getLocInfo(uint8_t* pInfo)
+	void LocDecoder::getLANLocInfo(uint8_t* pInfo)
 	{
 		lock_guard<recursive_mutex> lock(m_MLocInfo);
 		m_LocInfo.XOR = 0;
@@ -101,7 +116,7 @@ namespace DCC_V3
 		memcpy(pInfo, &m_LocInfo, sizeof(m_LocInfo));
 	}
 
-	void LocDecoder::getLocMode(uint8_t* pMode)
+	void LocDecoder::getLANLocMode(uint8_t* pMode)
 	{
 		lock_guard<recursive_mutex> lock(m_MLocMode);
 		memcpy(pMode, &m_LocMode, *(uint8_t*)&m_LocMode.DataLen);

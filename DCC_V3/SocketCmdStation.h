@@ -36,6 +36,13 @@ namespace DCC_V3
 			SocketCmdStation(int& sock_me, const struct sockaddr_in& address);
 			virtual ~SocketCmdStation();
 
+			static SocketCmdStation* find(int& sock_me, const struct sockaddr_in& address);
+
+			virtual void notifySetStop(void);
+			virtual void notifyRailPowerOff(void);
+			virtual void notifyRailPowerOn(void);
+			virtual void notifyLocInfoChange(const uint16_t& locAddress);
+
 			const struct sockaddr_in& getAddress(void)
 			{
 				return m_Address;

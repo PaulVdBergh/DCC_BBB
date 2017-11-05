@@ -41,8 +41,8 @@ namespace DCC_V3
 
 			virtual bool getDccMessage(uint8_t* pMsg);
 
-			void getLocInfo(uint8_t* pInfo);
-			void getLocMode(uint8_t* pMode);
+			void getLANLocInfo(uint8_t* pInfo);
+			void getLANLocMode(uint8_t* pMode);
 
 			bool getBusy()
 			{

@@ -7,6 +7,10 @@
 
 #include "XpressNetInterface.h"
 
+#include "XpressNetCmdStation.h"
+#include "LocDecoder.h"
+#include "System.h"
+
 #include <sys/epoll.h>
 #include <sys/eventfd.h>
 #include <sys/ioctl.h>
@@ -17,9 +21,6 @@
 #include <asm/termbits.h>
 
 #include <cstring>
-
-#include "LocDecoder.h"
-#include "System.h"
 
 namespace DCC_V3
 {
@@ -185,6 +186,8 @@ namespace DCC_V3
 						}
 
 						// The message has good checksum, so process it.
+						XpressNetCmdStation* pStation = XpressNetCmdStation::find(msg[1], m_fdSerial);
+
 						switch (msg[2])
 						{
 							case 0x21:
@@ -239,13 +242,13 @@ namespace DCC_V3
 
 									case 0x80://	Emergency Off
 									{
-										SystemState.CentralState |= 0x02;
+										CommandStation::notifyAllRailPowerOff();
 										break;
 									}
 
 									case 0x81://	Resume operation
 									{
-										SystemState.CentralState = 0x00;
+										CommandStation::notifyAllRailPowerOn();
 										break;
 									}
 
@@ -368,7 +371,7 @@ namespace DCC_V3
 
 							case 0x80://	Emergency stop
 							{
-								SystemState.CentralState |= 0x01;
+								CommandStation::notifyAllStop();
 								break;
 							}
 

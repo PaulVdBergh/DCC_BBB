@@ -43,15 +43,23 @@ namespace DCC_V3
 			void setBroadcastFlags(const uint32_t& flags);
 			const uint8_t* getLAN_BROADCASTFLAGS(void);
 
-			static CommandStation* find(int& sock_me, const struct sockaddr_in& address);
-			static void replyAll(const uint32_t& flags, const uint8_t* payload);
+			static void notifyAllStop(void);
+			static void notifyAllRailPowerOff(void);
+			static void notifyAllRailPowerOn(void);
+			static void notifyAllLocInfoChange(const uint16_t& locAddress);
+
+			virtual void notifySetStop(void) = 0;
+			virtual void notifyRailPowerOff(void) = 0;
+			virtual void notifyRailPowerOn(void) = 0;
+			virtual void notifyLocInfoChange(const uint16_t& locAddress) = 0;
 
 		protected:
 			uint8_t* m_pLan_BroadcastFlags;
 
-		private:
 			static vector<CommandStation*> sm_Stations;
 			static recursive_mutex sm_MStations;
+
+		private:
 
 	};
 } /* namespace DCC_V3 */

@@ -24,10 +24,10 @@
 
 #include "CommandStation.h"
 #include "SocketCmdStation.h"
+#include "System.h"
 #include "Z21LANProtocol.h"
 
 #include <cstring>
-#include <algorithm>
 
 namespace DCC_V3
 {
@@ -58,41 +58,42 @@ namespace DCC_V3
 		return m_pLan_BroadcastFlags;
 	}
 
-	CommandStation* CommandStation::find(int& sock_me, const struct sockaddr_in& address)
+	void CommandStation::notifyAllStop()
 	{
-		lock_guard<recursive_mutex> guard(sm_MStations);
-		auto station = find_if(sm_Stations.begin(), sm_Stations.end(),
-		                [&address](CommandStation * pS)
-		                {
-			                SocketCmdStation* pSS = dynamic_cast<SocketCmdStation*> (pS);
-			                if(pSS == NULL)
-			                {
-				                return(false);
-			                }
-			                const struct sockaddr_in & otherAddress = pSS->getAddress();
-			                return((otherAddress.sin_addr.s_addr == address.sin_addr.s_addr) && (otherAddress.sin_port == address.sin_port));
-		                });
-		if (station == sm_Stations.end())
+		SystemState.CentralState |= 0x01;
+		lock_guard<recursive_mutex> lock(sm_MStations);
+		for(auto pStation : sm_Stations)
 		{
-			SocketCmdStation* pStation = new SocketCmdStation(sock_me, address);
-			sm_Stations.push_back(pStation);
-			return pStation;
+			pStation->notifySetStop();
 		}
-		return (*station);
 	}
 
-	void CommandStation::replyAll(const uint32_t& flags, const uint8_t* payload)
+	void CommandStation::notifyAllRailPowerOff()
 	{
-		for (CommandStation* pStation : sm_Stations)
+		SystemState.CentralState |= 0x02;
+		lock_guard<recursive_mutex> lock(sm_MStations);
+		for(auto pStation : sm_Stations)
 		{
-			if (flags & pStation->getBroadcastFlags())
-			{
-				SocketCmdStation* pSS = dynamic_cast<SocketCmdStation*>(pStation);
-				if (pSS)
-				{
-					sendto(pSS->getMySocket(), payload, payload[0], 0, (struct sockaddr*)&(pSS->getAddress()), sizeof(struct sockaddr_in));
-				}
-			}
+			pStation->notifyRailPowerOff();
+		}
+	}
+
+	void CommandStation::notifyAllRailPowerOn()
+	{
+		SystemState.CentralState = 0x00;
+		lock_guard<recursive_mutex> lock(sm_MStations);
+		for(auto pStation : sm_Stations)
+		{
+			pStation->notifyRailPowerOn();
+		}
+	}
+
+	void CommandStation::notifyAllLocInfoChange(const uint16_t& locAddress)
+	{
+		lock_guard<recursive_mutex> lock(sm_MStations);
+		for(auto pStation : sm_Stations)
+		{
+			pStation->notifyLocInfoChange(locAddress);
 		}
 	}
 

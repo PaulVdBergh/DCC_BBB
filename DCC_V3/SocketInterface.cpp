@@ -24,7 +24,7 @@
 
 #include "SocketInterface.h"
 
-#include "CommandStation.h"
+#include "SocketCmdStation.h"
 #include "LocDecoder.h"
 #include "System.h"
 #include "Z21LANProtocol.h"
@@ -215,7 +215,7 @@ namespace DCC_V3
 							case 0x00510004: //  LAN_GET_BROADCASTFLAGS
 							{
 								location += sprintf(location, "LAN_GET_BROADCASTFLAGS\n");
-								const uint8_t* pMsg = (CommandStation::find(m_sock_me, si_other))->getLAN_BROADCASTFLAGS();
+								const uint8_t* pMsg = (SocketCmdStation::find(m_sock_me, si_other))->getLAN_BROADCASTFLAGS();
 								sendto(m_sock_me, pMsg, pMsg[0], 0, (struct sockaddr*)&si_other, sizeof(si_other));
 								break;
 							}
@@ -250,23 +250,7 @@ namespace DCC_V3
 								if (*(uint16_t*)&payload[4] == 0x8080) //  LAN_X_SET_STOP
 								{
 									location += sprintf(location, "LAN_X_SET_STOP\n");
-									SystemState.CentralState |= 0x01;
-									CommandStation::replyAll(0x00000001, LAN_X_BC_STOPPED);
-
-									uint8_t locInfo[14];
-									lock_guard<recursive_mutex> guard(Decoder::sm_MDecoders);
-									map<uint16_t, Decoder*>::iterator it = Decoder::sm_Decoders.begin();
-									while(it != Decoder::sm_Decoders.end())
-									{
-										LocDecoder* pLoc = dynamic_cast<LocDecoder*>(it->second);
-										if (pLoc)
-										{
-											pLoc->setSpeed(0x00);
-											pLoc->getLocInfo(locInfo);
-											CommandStation::replyAll(0x00000001, locInfo);
-										}
-										it++;
-									}
+									CommandStation::notifyAllStop();
 								}
 								break;
 							}
@@ -283,7 +267,7 @@ namespace DCC_V3
 								if (pLoc)
 								{
 									uint8_t locMode[7];
-									pLoc->getLocMode(locMode);
+									pLoc->getLANLocMode(locMode);
 									sendto(m_sock_me, locMode, locMode[0], 0, (struct sockaddr*)&si_other, sizeof(si_other));
 								}
 								location += sprintf(location, "LAN_GET_LOCMODE  Address = %i\n", locAddress);
@@ -340,8 +324,11 @@ namespace DCC_V3
 										if (payload[6] == 0xA1)
 										{
 											location += sprintf(location, "LAN_X_SET_TRACK_POWER_OFF\n");
+											CommandStation::notifyAllRailPowerOff();
+/*
 											SystemState.CentralState |= 0x02;
 											CommandStation::replyAll(0x00000001, LAN_X_BC_TRACK_POWER_OFF);
+*/
 										}
 										break;
 									}
@@ -351,8 +338,11 @@ namespace DCC_V3
 										if (payload[6] == 0xA0)
 										{
 											location += sprintf(location, "LAN_X_SET_TRACK_POWER_ON\n");
+											CommandStation::notifyAllRailPowerOn();
+/*
 											SystemState.CentralState = 0x00;
 											CommandStation::replyAll(0x00000001, LAN_X_BC_TRACK_POWER_ON);
+*/
 										}
 										break;
 									}
@@ -435,7 +425,7 @@ namespace DCC_V3
 							case 0x00500008: //  LAN_SET_BROADCASTFLAGS
 							{
 								location += sprintf(location, "LAN_SET_BROADCASTFLAGS : 0x%08X\n", (*(uint32_t*)&payload[4]));
-								(CommandStation::find(m_sock_me, si_other))->setBroadcastFlags(*(uint32_t*)&payload[4]);
+								(SocketCmdStation::find(m_sock_me, si_other))->setBroadcastFlags(*(uint32_t*)&payload[4]);
 								break;
 							}
 
@@ -485,8 +475,8 @@ namespace DCC_V3
 										if (pLoc)
 										{
 											uint8_t infoMessage[14];
-											pLoc->getLocInfo(infoMessage);
-											CommandStation::replyAll(0x00000001, infoMessage);
+											pLoc->getLANLocInfo(infoMessage);
+											sendto(m_sock_me, infoMessage, infoMessage[0], 0, (struct sockaddr*)&si_other, sizeof(si_other));
 										}
 										break;
 									}
@@ -880,18 +870,22 @@ namespace DCC_V3
 											{
 												pLoc->setLocoDrive(payload[8]);
 											}
-
+/*
 											uint8_t infoMessage[14];
 											pLoc->getLocInfo(infoMessage);
 											CommandStation::replyAll(0x00000001, infoMessage);
+*/
 										}
 										else
 										{
 											break;
 										}
+										CommandStation::notifyAllLocInfoChange(pLoc->getAddress());
+/*
 										uint8_t locInfo[14];
 										pLoc->getLocInfo(locInfo);
 										CommandStation::replyAll(0x00000001, locInfo);
+*/
 									}
 								}
 								else if (payload[4] == 0x24)
