@@ -16,26 +16,41 @@
  */
 
 /*
- * main.cpp
+ * Manager.cpp
  *
  *  Created on: Nov 23, 2017
  *      Author: paul
  */
 
 #include "Manager.h"
-using namespace DCC_V3;
+#include "Client.h"
 
-int main(int argc, char** argv)
+namespace DCC_V3
 {
-	Manager* pManager = new Manager();
 
-	pManager->setPowerState(POWER_ON);
+	Manager::Manager()
+	:	m_PowerState(POWER_OFF)
+	,	m_pRailPowerPin(new exploringBB::GPIO(RAILPOWER_PIN))
+	{
+	}
 
-	pManager->setPowerState(POWER_OFF);
+	Manager::~Manager()
+	{
+		delete m_pRailPowerPin;
+	}
 
-	delete pManager;
+	void Manager::setPowerState(const powerstate_t& newState)
+	{
+		if(m_PowerState != newState)
+		{
+			m_PowerState = newState;
+			m_pRailPowerPin->setValue((POWER_OFF == newState) ? exploringBB::LOW : exploringBB::HIGH);
 
-	return 0;
-}
+			for(auto client : m_Clients)
+			{
+				client->notifyPowerState(m_PowerState);
+			}
+		}
+	}
 
-
+} /* namespace DCC_V3 */

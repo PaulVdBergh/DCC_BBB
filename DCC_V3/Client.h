@@ -16,26 +16,36 @@
  */
 
 /*
- * main.cpp
+ * Client.h
  *
  *  Created on: Nov 23, 2017
  *      Author: paul
  */
 
+#ifndef CLIENT_H_
+#define CLIENT_H_
+
+#include "types.h"
 #include "Manager.h"
-using namespace DCC_V3;
 
-int main(int argc, char** argv)
+namespace DCC_V3
 {
-	Manager* pManager = new Manager();
 
-	pManager->setPowerState(POWER_ON);
+	class Client
+	{
+		public:
+			Client(Manager* pmanager);
+			virtual ~Client();
 
-	pManager->setPowerState(POWER_OFF);
+			virtual void notifyPowerState(powerstate_t newState);
 
-	delete pManager;
+		protected:
+			Manager*	m_pManager;
 
-	return 0;
-}
+		private:
 
+	};
 
+} /* namespace DCC_V3 */
+
+#endif /* CLIENT_H_ */

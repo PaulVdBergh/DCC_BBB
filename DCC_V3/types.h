@@ -16,26 +16,25 @@
  */
 
 /*
- * main.cpp
+ * types.h
  *
  *  Created on: Nov 23, 2017
  *      Author: paul
  */
 
-#include "Manager.h"
-using namespace DCC_V3;
+#ifndef TYPES_H_
+#define TYPES_H_
 
-int main(int argc, char** argv)
+
+namespace DCC_V3
 {
-	Manager* pManager = new Manager();
 
-	pManager->setPowerState(POWER_ON);
+	enum powerstate_t
+	{
+		POWER_OFF,
+		POWER_ON
+	};
 
-	pManager->setPowerState(POWER_OFF);
+}	/* namespace DCC_V3 */
 
-	delete pManager;
-
-	return 0;
-}
-
-
+#endif /* TYPES_H_ */

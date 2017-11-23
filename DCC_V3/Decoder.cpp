@@ -89,7 +89,7 @@ namespace DCC_V3
 		}
 	}
 
-	thread Decoder::m_thread = thread([] {threadFunc();});
+//	thread Decoder::m_thread = thread([] {threadFunc();});
 	map<uint16_t, Decoder*> Decoder::sm_Decoders;
 	recursive_mutex Decoder::sm_MDecoders;
 

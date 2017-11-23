@@ -16,26 +16,31 @@
  */
 
 /*
- * main.cpp
+ * Client.cpp
  *
  *  Created on: Nov 23, 2017
  *      Author: paul
  */
 
-#include "Manager.h"
-using namespace DCC_V3;
+#include "Client.h"
 
-int main(int argc, char** argv)
+namespace DCC_V3
 {
-	Manager* pManager = new Manager();
 
-	pManager->setPowerState(POWER_ON);
+	Client::Client(Manager* pmanager)
+	:	m_pManager(pmanager)
+	{
+		// TODO Auto-generated constructor stub
+	}
 
-	pManager->setPowerState(POWER_OFF);
+	Client::~Client()
+	{
+		// TODO Auto-generated destructor stub
+	}
 
-	delete pManager;
+	void Client::notifyPowerState(powerstate_t newState)
+	{
 
-	return 0;
-}
+	}
 
-
+} /* namespace DCC_V3 */

@@ -16,26 +16,49 @@
  */
 
 /*
- * main.cpp
+ * Manager.h
  *
  *  Created on: Nov 23, 2017
  *      Author: paul
  */
 
-#include "Manager.h"
-using namespace DCC_V3;
+#ifndef MANAGER_H_
+#define MANAGER_H_
 
-int main(int argc, char** argv)
+#include <vector>
+
+#include "types.h"
+#include "ExploringBB/GPIO.h"
+
+using namespace std;
+
+namespace DCC_V3
 {
-	Manager* pManager = new Manager();
 
-	pManager->setPowerState(POWER_ON);
+#define RAILPOWER_PIN	(48)	//	BBB P9_15 $PINS 16 - 0x840/040 - GPIO1_16 - GPIO 48
 
-	pManager->setPowerState(POWER_OFF);
+	class Client;	//	forward declaration
 
-	delete pManager;
+	class Manager
+	{
+		public:
+			Manager();
+			virtual ~Manager();
 
-	return 0;
-}
+			powerstate_t getPowerState(void) { return m_PowerState; }
+			void	setPowerState(const powerstate_t& newstate);
 
+		protected:
 
+		private:
+			powerstate_t m_PowerState;
+
+			exploringBB::GPIO*	m_pRailPowerPin;
+
+			vector<Client*> m_Clients;
+
+	};
+
+} /* namespace DCC_V3 */
+
+#endif /* MANAGER_H_ */
